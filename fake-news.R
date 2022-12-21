@@ -41,7 +41,7 @@ results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(
 
 for (i in 10:3100) {
 
-  # Extract (10~3100) concepts
+  # Extract (10~3100) concepts (dims)
   lsa.tfidf <- lsa(tridf, dims = i)
 
   # Convert to data frame
