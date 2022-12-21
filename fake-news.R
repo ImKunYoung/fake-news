@@ -36,6 +36,8 @@ results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(
 
 for (i in 10:20) {
 
+  print(i)
+
   # Extract (10~20) concepts
   lsa.tfidf <- lsa(tridf, dims = i)
 
