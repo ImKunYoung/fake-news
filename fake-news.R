@@ -34,9 +34,9 @@ tridf <- weightTfIdf(tdm)
 results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
 
 
-for (i in 10:600) {
+for (i in 10:3000) {
 
-  # Extract (10~600) concepts
+  # Extract (10~3000) concepts
   lsa.tfidf <- lsa(tridf, dims = i)
 
   # Convert to data frame
