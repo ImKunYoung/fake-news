@@ -34,9 +34,9 @@ tridf <- weightTfIdf(tdm)
 results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
 
 
-for (i in 10:600) {
+for (i in 10:100) {
 
-  # Extract (10~600) concepts
+  # Extract (10~100) concepts
   lsa.tfidf <- lsa(tridf, dims = i)
 
   # Convert to data frame
@@ -57,7 +57,10 @@ for (i in 10:600) {
   pred <- predict(reg, newdata = validData, type = "response")
 
   # Produce confusion matrix
-  confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+  cm <- confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+
+  # Append the results to the data frame
+  results.df <- rbind(results.df, c(i, cm$table[1], cm$table[2], cm$table[3], cm$table[4], cm$overall[1]))
 
 }
 
