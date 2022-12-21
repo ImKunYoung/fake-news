@@ -34,7 +34,7 @@ tridf <- weightTfIdf(tdm)
 results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
 
 
-for (i in 10:20) {
+for (i in 10:40) {
 
   print(i)
 
