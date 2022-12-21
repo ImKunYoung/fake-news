@@ -11,7 +11,7 @@ fake.news.df<-fake.news.df[fake.news.df$label==1|fake.news.df$label==0,]
 
 # remove na
 fake.news.df<-na.omit(fake.news.df)
-MODEL-E-TEST-1: Extract (10~100) / Change Data Set
+
 # combine fake.news.df$title and fake.news.df$author
 fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$author, sep = " ")
 
