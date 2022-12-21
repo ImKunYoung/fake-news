@@ -38,6 +38,8 @@ results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(
 
 for (i in 10:600) {
 
+  print(i)
+
   # Extract (10~600) concepts
   lsa.tfidf <- lsa(tridf, dims = i)
 
@@ -59,7 +61,10 @@ for (i in 10:600) {
   pred <- predict(reg, newdata = validData, type = "response")
 
   # Produce confusion matrix
-  confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+  cm <- confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+
+  # Append the results to the data frame
+  results.df <- rbind(results.df, c(i, cm$table[1], cm$table[2], cm$table[3], cm$table[4], cm$overall[1]))
 
 }
 
