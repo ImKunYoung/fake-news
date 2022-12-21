@@ -43,7 +43,6 @@ if (any(apply(tdm, 2, sum) == 0)) {
   tdm <- tdm[, apply(tdm, 2, sum) != 0]
 }
 
-
 tridf <- weightTfIdf(tdm)
 
 # Initialize an empty data frame to store the results
