@@ -7,13 +7,13 @@ library(caret)
 fake.news.df <- read.csv("data/FakeNews.csv")
 
 # remove fake.news.df$real is not 1 or 0
-fake.news.df<-fake.news.df[fake.news.df$real==1|fake.news.df$real==0,]
+fake.news.df<-fake.news.df[fake.news.df$label==1|fake.news.df$label==0,]
 
 # remove na
 fake.news.df<-na.omit(fake.news.df)
-
-# combine fake.news.df$title and fake.news.df$source_domain
-fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$source_domain, sep = " ")
+MODEL-E-TEST-1: Extract (10~100) / Change Data Set
+# combine fake.news.df$title and fake.news.df$author
+fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$author, sep = " ")
 
 # Calculate the number of rows
 row_size <- nrow(fake.news.df)
@@ -37,6 +37,13 @@ corpus <- tm_map(corpus, stemDocument)
 
 # Compute TF-IDF
 tdm <- TermDocumentMatrix(corpus)
+
+# Initialize an empty data frame to store the results
+if (any(apply(tdm, 2, sum) == 0)) {
+  tdm <- tdm[, apply(tdm, 2, sum) != 0]
+}
+
+
 tridf <- weightTfIdf(tdm)
 
 # Initialize an empty data frame to store the results
