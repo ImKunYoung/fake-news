@@ -12,11 +12,14 @@ fake.news.df<-fake.news.df[fake.news.df$real==1|fake.news.df$real==0,]
 # remove na
 fake.news.df<-na.omit(fake.news.df)
 
+# combine fake.news.df$title and fake.news.df$source_domain
+fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$source_domain, sep = " ")
+
 # Calculate the number of rows
 row_size <- nrow(fake.news.df)
 
 # Create corpus from data frame
-corpus <- VCorpus(VectorSource(fake.news.df[1:row_size, 1]))
+corpus <- VCorpus(VectorSource(fake.news.df[1:row_size, 6]))
 
 # Create label
 label <- as.factor(fake.news.df[1:row_size, 5])
@@ -39,7 +42,7 @@ tridf <- weightTfIdf(tdm)
 # Initialize an empty data frame to store the results
 results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
 
-for (i in 10:3000) {
+for (i in 20:21) {
 
   print(i)
 
@@ -65,6 +68,8 @@ for (i in 10:3000) {
 
   # Produce confusion matrix
   cm <- confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+
+  print(cm)
 
   # Append the results to the data frame
   results.df <- rbind(results.df, c(i, cm$table[1], cm$table[2], cm$table[3], cm$table[4], cm$overall[1]))
