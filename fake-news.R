@@ -9,6 +9,9 @@ fake.news.df <- read.csv("data/FakeNews.csv")
 # remove fake.news.df$real is not 1 or 0
 fake.news.df<-fake.news.df[fake.news.df$real==1|fake.news.df$real==0,]
 
+# remove na
+fake.news.df<-na.omit(fake.news.df)
+
 # Calculate the number of rows
 row_size <- nrow(fake.news.df)
 
