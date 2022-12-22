@@ -6,6 +6,9 @@ library(caret)
 # Read csv file
 fake.news.df <- read.csv("data/FakeNews.csv")
 
+# Dimensional Reduction 50% of the data
+fake.news.df <- fake.news.df[1:round(0.5*nrow(fake.news.df)),]
+
 # remove fake.news.df$real is not 1 or 0
 fake.news.df<-fake.news.df[fake.news.df$label==1|fake.news.df$label==0,]
 
@@ -28,6 +31,7 @@ corpus <- VCorpus(VectorSource(fake.news.df[1:row_size, 6]))
 label <- as.factor(fake.news.df[1:row_size, 5])
 
 # Tokenization
+corpus <- tm_map(corpus, content_transformer(tolower))
 corpus <- tm_map(corpus, stripWhitespace)
 corpus <- tm_map(corpus, removePunctuation)
 corpus <- tm_map(corpus, removeNumbers)
