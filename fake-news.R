@@ -12,6 +12,9 @@ fake.news.df<-fake.news.df[fake.news.df$label==1|fake.news.df$label==0,]
 # remove na
 fake.news.df<-na.omit(fake.news.df)
 
+# remove fake.news.df$title is empty
+fake.news.df<-fake.news.df[fake.news.df$title!="",]
+
 # combine fake.news.df$title and fake.news.df$author
 fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$author, sep = " ")
 
@@ -48,7 +51,7 @@ tridf <- weightTfIdf(tdm)
 # Initialize an empty data frame to store the results
 results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
 
-for (i in 10:11) {
+for (i in 20:22) {
 
   print(i)
 
