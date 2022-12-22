@@ -1,3 +1,6 @@
+# Set Encoding
+Sys.setlocale("LC_ALL", "C")
+
 library(tm)
 library(SnowballC)
 library(lsa)
@@ -44,6 +47,9 @@ corpus <- tm_map(corpus, stemDocument)
 
 # Compute TF-IDF
 tdm <- TermDocumentMatrix(corpus)
+
+# Remove sparse terms
+tdm <- removeSparseTerms(tdm, 0.999)
 
 # Initialize an empty data frame to store the results
 if (any(apply(tdm, 2, sum) == 0)) {
