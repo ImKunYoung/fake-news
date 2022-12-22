@@ -1,8 +1,3 @@
-install.packages("tm")
-install.packages("SnowballC")
-install.packages("lsa")
-install.packages("caret")
-
 library(tm)
 library(SnowballC)
 library(lsa)
