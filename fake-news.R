@@ -63,6 +63,8 @@ for (i in 10:3000) {
   # Produce confusion matrix
   cm <- confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
 
+  print(cm)
+
   # Append the results to the data frame
   results.df <- rbind(results.df, c(i, cm$table[1], cm$table[2], cm$table[3], cm$table[4], cm$overall[1]))
 
