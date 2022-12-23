@@ -88,7 +88,7 @@ pred<-predict(reg, newdata=validData, type="response")
 # Produce confusion matrix
 
 
-cm <- print(confusionMatrix(table(ifelse(pred>0.5, 1, 0), validData$label)))
+cm <- confusionMatrix(table(ifelse(pred>0.5, 1, 0), validData$label))
 print(cm)
 # 교차 검증을 위한 패키지 설치
 install.packages("caret")
