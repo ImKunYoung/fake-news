@@ -2,85 +2,110 @@ library(tm)
 library(SnowballC)
 library(lsa)
 library(caret)
+library(dplyr)
+library(plyr)
+library(ggplot2)
 
 # Read csv file
-fake.news.df <- read.csv("data/FakeNews.csv")
+fake.news.df<-read.csv("data/FakeNews.csv")
 
-# remove fake.news.df$real is not 1 or 0
-fake.news.df<-fake.news.df[fake.news.df$label==1|fake.news.df$label==0,]
+# Remove rows with missing values
+fake.news.df<-fake.news.df[complete.cases(fake.news.df),]
 
-# remove na
-fake.news.df<-na.omit(fake.news.df)
+# Remove non-specific data
+fake.news.df<-fake.news.df[fake.news.df$real %in% c(1, 0),]
 
-# combine fake.news.df$title and fake.news.df$author
-fake.news.df$combined <- paste(fake.news.df$title, fake.news.df$author, sep = " ")
+windows()
+
+ggplot(fake.news.df, aes(x=real)) + geom_bar()
+
+
+
+
+# library(naivebayes)
+# NBmodel <- naive_bayes(X_train, y_train)
+# predicted <- predict(NBmodel, X_test)
+# predicted
+#
+# library(caret)
+# cm2 <- confusionMatrix(y_test, predicted)
+# score2 <- accuracy(y_test, predicted)
+# cr2 <- classification_report(y_test, predicted)
+#
+# library(ROCR)
+# pred <- prediction(predicted, y_test)
+# perf <- performance(pred, "auc")
+# auc2 <- as.numeric(perf@y.values)
 
 # Calculate the number of rows
-row_size <- nrow(fake.news.df)
+row_size<-nrow(fake.news.df)
 
 # Create corpus from data frame
-corpus <- VCorpus(VectorSource(fake.news.df[1:row_size, 6]))
+corpus<-VCorpus(VectorSource(fake.news.df[1:row_size, 1]))
 
 # Create label
-label <- as.factor(fake.news.df[1:row_size, 5])
+label<-as.factor(fake.news.df[1:row_size, 5])
 
 # Tokenization
-corpus <- tm_map(corpus, stripWhitespace)
-corpus <- tm_map(corpus, removePunctuation)
-corpus <- tm_map(corpus, removeNumbers)
+corpus<-tm_map(corpus, stripWhitespace)
+corpus<-tm_map(corpus, removePunctuation)
+corpus<-tm_map(corpus, removeNumbers)
 
 # Stopwords
-corpus <- tm_map(corpus, removeWords, stopwords("english"))
+corpus<-tm_map(corpus, removeWords, stopwords("english"))
 
 # Stemming
-corpus <- tm_map(corpus, stemDocument)
+corpus<-tm_map(corpus, stemDocument)
 
 # Compute TF-IDF
-tdm <- TermDocumentMatrix(corpus)
+tdm<-TermDocumentMatrix(corpus)
 
-# Initialize an empty data frame to store the results
-if (any(apply(tdm, 2, sum) == 0)) {
-  tdm <- tdm[, apply(tdm, 2, sum) != 0]
+if (any(apply(tdm, 2, sum)==0)) {
+  tdm<-tdm[, apply(tdm, 2, sum)!=0]
 }
 
-tridf <- weightTfIdf(tdm)
+tridf<-weightTfIdf(tdm)
 
-# Initialize an empty data frame to store the results
-results.df <- data.frame(dims=integer(), tn=integer(), fn=integer(), fp=integer(), tp=integer(), accuracy=numeric(), stringsAsFactors = FALSE)
+# Extract (20) concepts
+lsa.tfidf<-lsa(tridf, dims=20)
 
-for (i in 10:100) {
+# Convert to data frame
+words.df<-as.data.frame(as.matrix(lsa.tfidf$dk))
 
-  print(i)
+# Set seed
+set.seed(123)
 
-  # Extract (10~100) concepts (dims)
-  lsa.tfidf <- lsa(tridf, dims = i)
+# Sample 60% of the data for training
+training<-sample(row_size, 0.6*row_size)
 
-  # Convert to data frame
-  words.df <- as.data.frame(as.matrix(lsa.tfidf$dk))
+# Run logistic model on training
+trainData<-cbind(label=label[training], words.df[training,])
+reg<-glm(label ~ ., data=trainData, family=binomial)
 
-  # Set seed
-  set.seed(123)
+# Compute accuracy on validation set
+validData<-cbind(label=label[-training], words.df[-training,])
+pred<-predict(reg, newdata=validData, type="response")
 
-  # Sample 60% of the data for training
-  training <- sample(row_size, 0.6 * row_size)
+# Produce confusion matrix
+confusionMatrix(table(ifelse(pred>0.5, 1, 0), validData$label))
 
-  # Run logistic model on training
-  trainData <- cbind(label = label[training], words.df[training,])
-  reg <- glm(label ~ ., data = trainData, family = binomial)
 
-  # Compute accuracy on validation set
-  validData <- cbind(label = label[-training], words.df[-training,])
-  pred <- predict(reg, newdata = validData, type = "response")
 
-  # Produce confusion matrix
-  cm <- confusionMatrix(table(ifelse(pred > 0.5, 1, 0), validData$label))
+# 교차 검증을 위한 패키지 설치
+install.packages("caret")
+library(caret)
 
-  print(cm)
+# 나이브 베이즈 분류기를 적용할 수 있는 패키지 설치
+install.packages("e1071")
+library(e1071)
 
-  # Append the results to the data frame
-  results.df <- rbind(results.df, c(i, cm$table[1], cm$table[2], cm$table[3], cm$table[4], cm$overall[1]))
+# 나이브 베이즈 분류기를 적용합니다.
+nb <- naiveBayes(label ~ ., data=trainData)
 
-}
+# 검증 데이터 셋에 대해 예측을 수행합니다.
+pred <- predict(nb, newdata=validData)
 
-# Print the data frame
-print(results.df)
+# 예측 결과와 실제 값을 비교하여 정확도를 계산합니다.
+accuracy <- mean(pred == validData$label)
+print(paste("Accuracy:", accuracy))
+
