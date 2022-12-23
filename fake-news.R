@@ -3,7 +3,6 @@ library(SnowballC)
 library(lsa)
 library(caret)
 library(dplyr)
-library(plyr)
 library(ggplot2)
 
 # Read csv file
