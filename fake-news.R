@@ -87,25 +87,57 @@ validData<-cbind(label=label[-training], words.df[-training,])
 pred<-predict(reg, newdata=validData, type="response")
 
 # Produce confusion matrix
-confusionMatrix(table(ifelse(pred>0.5, 1, 0), validData$label))
 
 
-
+cm <- print(confusionMatrix(table(ifelse(pred>0.5, 1, 0), validData$label)))
+print(cm)
 # 교차 검증을 위한 패키지 설치
 install.packages("caret")
 library(caret)
 
-# 나이브 베이즈 분류기를 적용할 수 있는 패키지 설치
-install.packages("e1071")
-library(e1071)
+# # 나이브 베이즈 분류기를 적용합니다.
+# nb <- naiveBayes(label ~ ., data=trainData)
+#
+# # 검증 데이터 셋에 대해 예측을 수행합니다.
+# pred <- predict(nb, newdata=validData)
+#
+# # 예측 결과와 실제 값을 비교하여 정확도를 계산합니다.
+# accuracy <- mean(pred == validData$label)
+# print(paste("Accuracy:", accuracy))
+#
+# # 예측 결과와 실제 값을 비교한 결과를 출력합니다.
+# confusionMatrix(table(pred, validData$label))
 
-# 나이브 베이즈 분류기를 적용합니다.
-nb <- naiveBayes(label ~ ., data=trainData)
+
+# 결정 트리를 적용할 수 있는 패키지 설치
+install.packages("rpart")
+library(rpart)
+
+ipred_installed <- require("ipred", character.only=TRUE)
+print(ipred_installed)
+
+rpart_installed <- require("rpart", character.only=TRUE)
+print(rpart_installed)
+
+# rpart 패키지가 설치되어 있는지 확인합니다.
+
+install.packages("rpart")
+library(rpart)
+
+install.packages("ipred")
+library(ipred)
+# 결정 트리를 적용합니다.
+# 이 코드는 이전에 제공한 코드에서 사용한 trainData와 validData를 사용합니다.
+dt <- rpart(label ~ ., data=trainData)
 
 # 검증 데이터 셋에 대해 예측을 수행합니다.
-pred <- predict(nb, newdata=validData)
+pred <- predict(fake.news.df, newdata=validData, type="class")
 
 # 예측 결과와 실제 값을 비교하여 정확도를 계산합니다.
 accuracy <- mean(pred == validData$label)
 print(paste("Accuracy:", accuracy))
 
+# 예측 결과와 실제 값을 비교한 결과를 출력합니다.
+cm <- confusionMatrix(table(pred, validData$label))
+
+print(cm)
