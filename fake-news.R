@@ -1,5 +1,5 @@
 # Set Encoding
-Sys.setlocale("LC_ALL", "C")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
 
 library(tm)
 library(SnowballC)
@@ -66,7 +66,7 @@ for (i in 20:30) {
   print(i)
 
   # Extract (20~30) concepts
-  lsa.tfidf <- lsa(tridf, dims = i)
+  lsa.tfidf <- lsa(tridf, dims = 20)
 
   # Convert to data frame
   words.df <- as.data.frame(as.matrix(lsa.tfidf$dk))
